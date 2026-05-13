@@ -1,0 +1,253 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /home/user/m029601/private/ECBsintra2026/log/summarize_eurostat_regional_accounts.txt
+  log type:  text
+ opened on:  13 May 2026, 14:27:12
+
+. 
+. * GDP at current values in euro
+. clear all
+
+. getTimeSeries EUROSTAT NAMA_10R_2GDP/A.MIO_EUR. "" "" 0 0
+May 13, 2026 2:27:12 PM it.bancaditalia.oss.sdmx.util.Configuration init
+INFO: Class configuration found: it.bancaditalia.oss.sdmx.util.SdmxConfiguration
+May 13, 2026 2:27:12 PM REPL.$JShell$12 SgetTimeSeries
+INFO: METADATA is disabled.
+May 13, 2026 2:27:12 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/all/NAMA_10R_2GDP/latest
+May 13, 2026 2:27:12 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/datastructure/ESTAT/NAMA_10R_2GDP/30.0?references=descenda
+> nts
+May 13, 2026 2:27:13 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/ESTAT,NAMA_10R_2GDP,1.0/A.MIO_EUR.
+May 13, 2026 2:27:14 PM REPL.$JShell$12 SgetTimeSeries
+INFO: The query returned 471 time series.
+May 13, 2026 2:27:14 PM REPL.$JShell$12 SgetTimeSeries
+INFO: The query returned 11453 observations.
+
+. destring _all, replace
+TSNAME: contains nonnumeric characters; no replace
+DATE: all characters numeric; replaced as int
+VALUE already numeric; no replace
+
+. des
+
+Contains data
+ Observations:        11,453                  
+    Variables:             3                  
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+TSNAME          str33   %33s                  
+DATE            int     %10.0g                
+VALUE           double  %10.0g                
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. list in 1/10
+
+     +----------------------------------------------+
+     |                     TSNAME   DATE      VALUE |
+     |----------------------------------------------|
+  1. | NAMA_10R_2GDP.A.MIO_EUR.AL   2008    9057.96 |
+  2. | NAMA_10R_2GDP.A.MIO_EUR.AL   2009    8871.77 |
+  3. | NAMA_10R_2GDP.A.MIO_EUR.AL   2010    9117.03 |
+  4. | NAMA_10R_2GDP.A.MIO_EUR.AL   2011       9328 |
+  5. | NAMA_10R_2GDP.A.MIO_EUR.AL   2012    9528.75 |
+     |----------------------------------------------|
+  6. | NAMA_10R_2GDP.A.MIO_EUR.AL   2013       9641 |
+  7. | NAMA_10R_2GDP.A.MIO_EUR.AL   2014   10019.98 |
+  8. | NAMA_10R_2GDP.A.MIO_EUR.AL   2015   10339.22 |
+  9. | NAMA_10R_2GDP.A.MIO_EUR.AL   2016   10835.06 |
+ 10. | NAMA_10R_2GDP.A.MIO_EUR.AL   2017   11770.82 |
+     +----------------------------------------------+
+
+. 
+. * GDP at previous-year values in euro
+. clear all
+
+. getTimeSeries EUROSTAT NAMA_10R_2GDP/A.MIO_EUR. "" "" 0 0
+May 13, 2026 2:27:14 PM it.bancaditalia.oss.sdmx.util.Configuration init
+INFO: Class configuration found: it.bancaditalia.oss.sdmx.util.SdmxConfiguration
+May 13, 2026 2:27:14 PM REPL.$JShell$12 SgetTimeSeries
+INFO: METADATA is disabled.
+May 13, 2026 2:27:14 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/all/NAMA_10R_2GDP/latest
+May 13, 2026 2:27:15 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/datastructure/ESTAT/NAMA_10R_2GDP/30.0?references=descenda
+> nts
+May 13, 2026 2:27:15 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/ESTAT,NAMA_10R_2GDP,1.0/A.MIO_EUR.
+May 13, 2026 2:27:16 PM REPL.$JShell$12 SgetTimeSeries
+INFO: The query returned 471 time series.
+May 13, 2026 2:27:16 PM REPL.$JShell$12 SgetTimeSeries
+INFO: The query returned 11453 observations.
+
+. destring _all, replace
+TSNAME: contains nonnumeric characters; no replace
+DATE: all characters numeric; replaced as int
+VALUE already numeric; no replace
+
+. des
+
+Contains data
+ Observations:        11,453                  
+    Variables:             3                  
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+TSNAME          str33   %33s                  
+DATE            int     %10.0g                
+VALUE           double  %10.0g                
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. list in 1/10
+
+     +----------------------------------------------+
+     |                     TSNAME   DATE      VALUE |
+     |----------------------------------------------|
+  1. | NAMA_10R_2GDP.A.MIO_EUR.AL   2008    9057.96 |
+  2. | NAMA_10R_2GDP.A.MIO_EUR.AL   2009    8871.77 |
+  3. | NAMA_10R_2GDP.A.MIO_EUR.AL   2010    9117.03 |
+  4. | NAMA_10R_2GDP.A.MIO_EUR.AL   2011       9328 |
+  5. | NAMA_10R_2GDP.A.MIO_EUR.AL   2012    9528.75 |
+     |----------------------------------------------|
+  6. | NAMA_10R_2GDP.A.MIO_EUR.AL   2013       9641 |
+  7. | NAMA_10R_2GDP.A.MIO_EUR.AL   2014   10019.98 |
+  8. | NAMA_10R_2GDP.A.MIO_EUR.AL   2015   10339.22 |
+  9. | NAMA_10R_2GDP.A.MIO_EUR.AL   2016   10835.06 |
+ 10. | NAMA_10R_2GDP.A.MIO_EUR.AL   2017   11770.82 |
+     +----------------------------------------------+
+
+. 
+. * Compensation of employees
+. clear all
+
+. getTimeSeries EUROSTAT NAMA_10R_2COE/A.MIO_EUR.TOTAL. "" "" 0 0
+May 13, 2026 2:27:16 PM it.bancaditalia.oss.sdmx.util.Configuration init
+INFO: Class configuration found: it.bancaditalia.oss.sdmx.util.SdmxConfiguration
+May 13, 2026 2:27:16 PM REPL.$JShell$12 SgetTimeSeries
+INFO: METADATA is disabled.
+May 13, 2026 2:27:16 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/all/NAMA_10R_2COE/latest
+May 13, 2026 2:27:16 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/datastructure/ESTAT/NAMA_10R_2COE/30.0?references=descenda
+> nts
+May 13, 2026 2:27:17 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/ESTAT,NAMA_10R_2COE,1.0/A.MIO_EUR.TOTAL.
+May 13, 2026 2:27:17 PM REPL.$JShell$12 SgetTimeSeries
+INFO: The query returned 414 time series.
+May 13, 2026 2:27:17 PM REPL.$JShell$12 SgetTimeSeries
+INFO: The query returned 9890 observations.
+
+. destring _all, replace
+TSNAME: contains nonnumeric characters; no replace
+DATE: all characters numeric; replaced as int
+VALUE already numeric; no replace
+
+. des
+
+Contains data
+ Observations:         9,890                  
+    Variables:             3                  
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+TSNAME          str39   %39s                  
+DATE            int     %10.0g                
+VALUE           double  %10.0g                
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. list in 1/10
+
+     +--------------------------------------------------+
+     |                           TSNAME   DATE    VALUE |
+     |--------------------------------------------------|
+  1. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2000   103626 |
+  2. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2001   105857 |
+  3. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2002   107819 |
+  4. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2003   110244 |
+  5. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2004   112996 |
+     |--------------------------------------------------|
+  6. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2005   116601 |
+  7. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2006   122212 |
+  8. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2007   128354 |
+  9. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2008   135556 |
+ 10. | NAMA_10R_2COE.A.MIO_EUR.TOTAL.AT   2009   136247 |
+     +--------------------------------------------------+
+
+. 
+. * Household disposable income
+. clear all
+
+. getTimeSeries EUROSTAT NAMA_10R_2HHINC/A.MIO_EUR.BAL.B6N. "" "" 0 0
+May 13, 2026 2:27:18 PM it.bancaditalia.oss.sdmx.util.Configuration init
+INFO: Class configuration found: it.bancaditalia.oss.sdmx.util.SdmxConfiguration
+May 13, 2026 2:27:18 PM REPL.$JShell$12 SgetTimeSeries
+INFO: METADATA is disabled.
+May 13, 2026 2:27:18 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/all/NAMA_10R_2HHINC/latest
+May 13, 2026 2:27:18 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/datastructure/ESTAT/NAMA_10R_2HHINC/48.0?references=descen
+> dants
+May 13, 2026 2:27:19 PM it.bancaditalia.oss.sdmx.util.QueryRunner runQuery
+INFO: Contacting web service with query: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/ESTAT,NAMA_10R_2HHINC,1.0/A.MIO_EUR.BAL.B6N.
+May 13, 2026 2:27:20 PM REPL.$JShell$12 SgetTimeSeries
+INFO: The query returned 385 time series.
+May 13, 2026 2:27:20 PM REPL.$JShell$12 SgetTimeSeries
+INFO: The query returned 8532 observations.
+
+. destring _all, replace
+TSNAME: contains nonnumeric characters; no replace
+DATE: all characters numeric; replaced as int
+VALUE already numeric; no replace
+
+. des
+
+Contains data
+ Observations:         8,532                  
+    Variables:             3                  
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+TSNAME          str43   %43s                  
+DATE            int     %10.0g                
+VALUE           double  %10.0g                
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. list in 1/10
+
+     +------------------------------------------------------+
+     |                               TSNAME   DATE    VALUE |
+     |------------------------------------------------------|
+  1. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2000   124863 |
+  2. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2001   125397 |
+  3. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2002   127303 |
+  4. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2003   132440 |
+  5. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2004   137277 |
+     |------------------------------------------------------|
+  6. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2005   145978 |
+  7. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2006   153260 |
+  8. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2007   161566 |
+  9. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2008   166484 |
+ 10. | NAMA_10R_2HHINC.A.MIO_EUR.BAL.B6N.AT   2009   168044 |
+     +------------------------------------------------------+
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /home/user/m029601/private/ECBsintra2026/log/summarize_eurostat_regional_accounts.txt
+  log type:  text
+ closed on:  13 May 2026, 14:27:20
+------------------------------------------------------------------------------------------------------------------------------------------------------------
