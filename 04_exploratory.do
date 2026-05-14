@@ -28,8 +28,8 @@ use "${finaldata}/working_nuts2_panel_5y.dta", clear
 encode region_2d, gen(region_id)
 xtset region_id period
 
-*** Weight: 2005-2009 (period 1) total population, constant across periods
-bysort region_id (period): gen pop_weight = pop_tot[1]
+*** Weight: 2005-2009 total population (pre-built in 02_build_nuts2_panel.do)
+gen pop_weight = pop_tot_p1
 label var pop_weight "Weight: total population 2005-2009 (period 1, all ages)"
 
 *** Change in stock of ROW foreign-born (period-to-period difference)

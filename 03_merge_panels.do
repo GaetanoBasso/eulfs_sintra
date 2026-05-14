@@ -51,20 +51,7 @@ use "${finaldata}/EULFS/eulfs_nuts2_panel_5y.dta", clear
 merge 1:1 region_2d period using `eurostat_5y', nogen
 
 ********************************************************************************
-***  STEP 3: Keep only consistent country-regions
-***  Criterion: all 4 periods present; key variables non-missing in every period
-********************************************************************************
-
-gen _miss_key = missing(pop_fb_row) | missing(ss_instrument) | missing(gdp_real)
-
-bysort region_2d: gen  _nperiods  = _N
-bysort region_2d: egen _nmiss_key = total(_miss_key)
-
-keep if _nperiods == 4 & _nmiss_key == 0
-drop _miss_key _nperiods _nmiss_key
-
-********************************************************************************
-***  STEP 4: Save
+***  STEP 3: Save
 ********************************************************************************
 
 sort country region_2d period

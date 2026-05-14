@@ -200,6 +200,9 @@ collapse (mean) pop_tot pop_nat pop_fb pop_fb_eu pop_fb_eurne pop_fb_adv pop_fb_
 gen sh_tert = ednum / eddenom
 drop ednum eddenom
 
+*** Period-1 (2005-2009) total population — constant across periods, for weighting
+bysort region_2d (period): gen pop_tot_p1 = pop_tot[1]
+
 *** Merge shift-share instrument
 merge 1:1 country region_2d period using `ss_final', nogen
 
@@ -220,6 +223,7 @@ label var period               "5-year period (1=2005-09, 2=2010-14, 3=2015-19, 
 label var period_t0            "First year of 5-year window"
 label var flag_missing_countryb "=1 if country-of-birth detail unavailable (ncountry<12)"
 
+label var pop_tot_p1           "Total population 2005-2009 (period-1 avg), panel weight"
 label var pop_tot              "Total population, all (5-yr avg)"
 label var pop_nat              "Total population, native born"
 label var pop_fb               "Total population, foreign born"
