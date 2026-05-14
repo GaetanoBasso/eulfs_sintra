@@ -41,6 +41,7 @@
 
 use "${cleaneddata}/EULFS/eulfs_byorigin_byedu_byregion_2004_2024.dta", clear
 
+drop if country=="UK"|country=="CH"|country=="NO"|country=="IS"
 drop if year < 2005
 drop if missing(region_2d) | region_2d == ""
 
@@ -118,6 +119,7 @@ restore
 
 *** Valid country of birth (exclude unknown/missing codes)
 gen valid_cb = !inlist(countryb, "", "NO ANSWER", "999") & !missing(countryb)
+gen flag_missing_countryb=missing(countryb)|inlist(countryb, "", "NO ANSWER", "999")
 
 *** Origin group indicators
 *   nat    : native born
@@ -254,5 +256,6 @@ label var ss_instrument        "Card (2001) shift-share: groups AFR_N_ASI_NME + 
 ***  Save
 ********************************************************************************
 
+tab country, m
 compress
-save "${finaldata}/EULFS/eulfs_nuts2_panel_5y.dta", replace
+save "${cleaneddata}/EULFS/eulfs_nuts2_panel_5y.dta", replace

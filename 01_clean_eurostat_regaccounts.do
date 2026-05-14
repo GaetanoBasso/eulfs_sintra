@@ -26,7 +26,7 @@
 *   growth is the standard Eurostat approximation for real regional GDP growth.
 *
 *   Output:
-*     ${cleaneddata}/eurostat/eurostat_nuts2_regaccounts.dta
+*     ${cleaneddata}/EUROSTAT/eurostat_nuts2_regaccounts.dta
 *     Unit: NUTS-2 region × year
 *     Variables: country, region_2d, year, gdp_real, gdp_cp, coe, hhinc
 *
@@ -37,7 +37,7 @@ local baseyear 2000
 ********************************************************************************
 ***  BLOCK 1: GDP at current prices (NUTS-2)
 ********************************************************************************
-
+clear
 getTimeSeries EUROSTAT NAMA_10R_2GDP/A.MIO_EUR. "" "" 0 0
 destring _all, replace
 
@@ -56,8 +56,8 @@ save `gdp_cp'
 ********************************************************************************
 ***  BLOCK 2: GVA growth rate — % change vs previous year (NUTS-2)
 ********************************************************************************
-
-getTimeSeries EUROSTAT NAMA_10R_2GVAGR/A.PCH_PRE. "" "" 0 0
+clear
+getTimeSeries EUROSTAT NAMA_10R_2GVAGR/A.B1GQ.PCH_PRE. "" "" 0 0
 destring _all, replace
 
 gen region_2d = substr(TSNAME, strrpos(TSNAME, ".") + 1, .)
@@ -115,7 +115,7 @@ save `gdp_final'
 ********************************************************************************
 ***  BLOCK 4: Compensation of employees (NUTS-2)
 ********************************************************************************
-
+clear
 getTimeSeries EUROSTAT NAMA_10R_2COE/A.MIO_EUR.TOTAL. "" "" 0 0
 destring _all, replace
 
@@ -134,7 +134,7 @@ save `coe_data'
 ********************************************************************************
 ***  BLOCK 5: Net household disposable income (NUTS-2)
 ********************************************************************************
-
+clear
 getTimeSeries EUROSTAT NAMA_10R_2HHINC/A.MIO_EUR.BAL.B6N. "" "" 0 0
 destring _all, replace
 
@@ -171,4 +171,4 @@ label var region_2d "NUTS-2 region code"
 label var year      "Year"
 
 compress
-save "${cleaneddata}/eurostat/eurostat_nuts2_regaccounts.dta", replace
+save "${cleaneddata}/EUROSTAT/eurostat_nuts2_regaccounts.dta", replace
