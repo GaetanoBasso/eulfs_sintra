@@ -1,16 +1,16 @@
 
 log using "${main}/log/summarize_eurostat_regional_accounts.txt", replace t
 
-* NUTS-3 GDP at current prices (MIO EUR)
+* GDP at current prices — NUTS-2 (MIO EUR)
 clear all
-getTimeSeries EUROSTAT NAMA_10R_3GDP/A.MIO_EUR. "" "" 0 0
+getTimeSeries EUROSTAT NAMA_10R_2GDP/A.MIO_EUR. "" "" 0 0
 destring _all, replace
 des
 list in 1/10
 
-* NUTS-3 GDP at previous-year prices (MIO EUR)
+* GVA growth rate — NUTS-2 (% change vs previous year)
 clear all
-getTimeSeries EUROSTAT NAMA_10R_3GDP/A.MIO_EUR_PYP. "" "" 0 0
+getTimeSeries EUROSTAT NAMA_10R_2GVAGR/A.PCH_PRE. "" "" 0 0
 destring _all, replace
 des
 list in 1/10
