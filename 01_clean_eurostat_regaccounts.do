@@ -5,85 +5,84 @@
 *   Download, clean, and build NUTS-2 regional accounts panel from Eurostat
 *
 *   Series:
-*     NAMA_10R_3GDP / A.MIO_EUR       NUTS-3 GDP, current prices
-*     NAMA_10R_3GDP / A.MIO_EUR_PYP   NUTS-3 GDP, previous-year prices
-*     NAMA_10R_2COE / A.MIO_EUR.TOTAL NUTS-2 compensation of employees
-*     NAMA_10R_2HHINC / A.MIO_EUR.BAL.B6N  NUTS-2 net household disp. income
+*     NAMA_10R_2GDP   / A.MIO_EUR     NUTS-2 GDP, current prices (MIO EUR)
+*     NAMA_10R_2GVAGR / A.PCH_PRE     NUTS-2 GVA growth rate, % change vs previous year
+*     NAMA_10R_2COE   / A.MIO_EUR.TOTAL   NUTS-2 compensation of employees (MIO EUR)
+*     NAMA_10R_2HHINC / A.MIO_EUR.BAL.B6N NUTS-2 net household disposable income (MIO EUR)
 *
-*   All raw TSNAME strings have the form: DATASET.FREQ.UNIT[.SUB...].GEO
+*   All TSNAME strings have the form: DATASET.FREQ.UNIT[.SUB...].GEO
 *   The geo code is always the last dot-separated segment.
+*   NUTS-2 regions have 4-character geo codes (e.g. AT11, DE21, FR10).
 *
 *   Chain-linking algorithm (base year = `baseyear'):
-*     1. Keep NUTS-3 geo codes (strlen == 5); derive NUTS-2: substr(geo,1,4)
-*     2. Sum NUTS-3 CP and PYP to NUTS-2 by collapsing on region_2d × year
-*     3. g(r,t)        = GDP_pyp(r,t) / GDP_cp(r,t−1)   [growth rate]
-*     4. Index(r,B)    = 1  (B = `baseyear'; fallback = first available year)
-*        Index(r,t)    = Index(r,t−1) × g(r,t)           [forward]
-*        Index(r,t−1)  = Index(r,t)   / g(r,t)           [backward]
-*     5. GDP_real(r,t) = GDP_cp(r,B) × Index(r,t)
+*     1. g(r,t)        = 1 + GVA_growth_rate(r,t) / 100
+*     2. Index(r,B)    = 1   (B = `baseyear'; fallback = first available year)
+*        Index(r,t)    = Index(r,t-1) * g(r,t)          [forward propagation]
+*        Index(r,t-1)  = Index(r,t)   / g(r,t)          [backward propagation]
+*     3. GDP_real(r,t) = GDP_cp(r,B) * Index(r,t)
+*
+*   GVA growth rates are used in place of GDP growth rates; at NUTS-2 level
+*   taxes minus subsidies on products are not separately observed, and GVA
+*   growth is the standard Eurostat approximation for real regional GDP growth.
+*
+*   AT/DE aggregation (BLOCK 7):
+*     EU-LFS for Austria (AT) and Germany (DE) is released at NUTS-1 level only.
+*     NUTS-2 Eurostat series are therefore summed to NUTS-1 for these two
+*     countries before saving.  NUTS-1 code = first 3 characters of NUTS-2 code
+*     (e.g. AT11, AT12, AT13 → AT1; DE11, DE12, DE13, DE14 → DE1).
+*     Aggregation: sum of flow/stock variables (gdp_real, gdp_cp, coe, hhinc).
 *
 *   Output:
-*     ${cleaneddata}/eurostat/eurostat_nuts2_regaccounts.dta
-*     Unit: NUTS-2 region × year
-*     Variables: country, region_2d, year, gdp_real, gdp_cp, gdp_pyp, coe, hhinc
+*     ${cleaneddata}/EUROSTAT/eurostat_nuts2_regaccounts.dta
+*     Unit: NUTS-2 region × year (NUTS-1 for AT and DE)
+*     Variables: country, region_2d, year, gdp_real, gdp_cp, coe, hhinc
 *
 ********************************************************************************
 
 local baseyear 2000
 
 ********************************************************************************
-***  BLOCK 1: NUTS-3 GDP at current prices
+***  BLOCK 1: GDP at current prices (NUTS-2)
 ********************************************************************************
-
-getTimeSeries EUROSTAT NAMA_10R_3GDP/A.MIO_EUR. "" "" 0 0
+clear
+getTimeSeries EUROSTAT NAMA_10R_2GDP/A.MIO_EUR. "" "" 0 0
 destring _all, replace
 
-gen geo   = substr(TSNAME, strrpos(TSNAME, ".") + 1, .)
+gen region_2d = substr(TSNAME, strrpos(TSNAME, ".") + 1, .)
 rename DATE  year
-rename VALUE gdp_cp_n3
+rename VALUE gdp_cp
 
-keep if strlen(geo) == 5          // NUTS-3 codes only (5 characters)
-gen region_2d = substr(geo, 1, 4) // parent NUTS-2
-keep region_2d year gdp_cp_n3
+keep if strlen(region_2d) == 4     // NUTS-2 codes only
+keep region_2d year gdp_cp
 
-collapse (sum) gdp_cp_n3, by(region_2d year)  // sum to NUTS-2
+label var gdp_cp "GDP current prices, MIO EUR (NUTS-2, NAMA_10R_2GDP)"
 
 tempfile gdp_cp
 save `gdp_cp'
 
 ********************************************************************************
-***  BLOCK 2: NUTS-3 GDP at previous-year prices
+***  BLOCK 2: GVA growth rate — % change vs previous year (NUTS-2)
 ********************************************************************************
-
-getTimeSeries EUROSTAT NAMA_10R_3GDP/A.MIO_EUR_PYP. "" "" 0 0
+clear
+getTimeSeries EUROSTAT NAMA_10R_2GVAGR/A.B1GQ.PCH_PRE. "" "" 0 0
 destring _all, replace
 
-gen geo   = substr(TSNAME, strrpos(TSNAME, ".") + 1, .)
+gen region_2d = substr(TSNAME, strrpos(TSNAME, ".") + 1, .)
 rename DATE  year
-rename VALUE gdp_pyp_n3
+rename VALUE gva_gr
 
-keep if strlen(geo) == 5
-gen region_2d = substr(geo, 1, 4)
-keep region_2d year gdp_pyp_n3
-
-collapse (sum) gdp_pyp_n3, by(region_2d year)  // sum to NUTS-2
+keep if strlen(region_2d) == 4
+keep region_2d year gva_gr
 
 ********************************************************************************
-***  BLOCK 3: Chain-link to obtain real GDP at NUTS-2
+***  BLOCK 3: Chain-link to obtain real GDP
 ********************************************************************************
 
 merge 1:1 region_2d year using `gdp_cp', nogen
 sort region_2d year
 
-*** Rename to working names
-rename gdp_cp_n3  gdp_cp
-rename gdp_pyp_n3 gdp_pyp
-
-*** Lagged current-price GDP: only use if years are consecutive (no gap)
-by region_2d: gen gdp_cp_lag = gdp_cp[_n-1] if year == year[_n-1] + 1
-
-*** Growth rate: g(r,t) = PYP(r,t) / CP(r,t-1)
-gen g = gdp_pyp / gdp_cp_lag
+*** Growth factor: g(r,t) = 1 + pct_change(r,t)/100
+gen g = 1 + gva_gr / 100
 
 *** Initialise chain-link index
 gen index = .
@@ -92,14 +91,13 @@ by region_2d (year): replace index = 1 if year == `baseyear'
 by region_2d (year): replace index = 1 if year == year[1] & missing(index)
 
 *** Forward propagation: Index(t) = Index(t-1) * g(t)
-* Each iteration extends the chain one year forward; 30 covers 2000-2030
 forvalues i = 1(1)30 {
     by region_2d (year): replace index = index[_n-1] * g ///
         if missing(index) & !missing(g) & !missing(index[_n-1])
 }
 
 *** Backward propagation: Index(t) = Index(t+1) / g(t+1)
-* After gsort descending, [_n-1] refers to year t+1 within region
+* After gsort descending, [_n-1] within region refers to the higher year
 gsort region_2d -year
 forvalues i = 1(1)30 {
     by region_2d: replace index = index[_n-1] / g[_n-1] ///
@@ -109,15 +107,13 @@ sort region_2d year
 
 *** Anchor current-price level at the year where index = 1
 gen   _anchor_cp = gdp_cp if index == 1
-* Broadcast anchor value to all years of the region
+* Broadcast anchor value to all years within region (missing sorts last)
 bysort region_2d (_anchor_cp): replace _anchor_cp = _anchor_cp[_N]
 
 *** Chain-linked real GDP (MIO EUR, prices of base year)
 gen gdp_real = _anchor_cp * index
-drop _anchor_cp g gdp_cp_lag index
+drop _anchor_cp g index gva_gr
 
-label var gdp_cp   "GDP current prices, MIO EUR (NUTS-3 summed to NUTS-2)"
-label var gdp_pyp  "GDP previous-year prices, MIO EUR (NUTS-3 summed to NUTS-2)"
 label var gdp_real "GDP chain-linked real, MIO EUR (base = `baseyear' current prices)"
 
 tempfile gdp_final
@@ -126,7 +122,7 @@ save `gdp_final'
 ********************************************************************************
 ***  BLOCK 4: Compensation of employees (NUTS-2)
 ********************************************************************************
-
+clear
 getTimeSeries EUROSTAT NAMA_10R_2COE/A.MIO_EUR.TOTAL. "" "" 0 0
 destring _all, replace
 
@@ -134,7 +130,7 @@ gen region_2d = substr(TSNAME, strrpos(TSNAME, ".") + 1, .)
 rename DATE  year
 rename VALUE coe
 
-keep if strlen(region_2d) == 4   // NUTS-2 codes only
+keep if strlen(region_2d) == 4
 keep region_2d year coe
 
 label var coe "Compensation of employees, total, MIO EUR (NUTS-2)"
@@ -145,7 +141,7 @@ save `coe_data'
 ********************************************************************************
 ***  BLOCK 5: Net household disposable income (NUTS-2)
 ********************************************************************************
-
+clear
 getTimeSeries EUROSTAT NAMA_10R_2HHINC/A.MIO_EUR.BAL.B6N. "" "" 0 0
 destring _all, replace
 
@@ -153,7 +149,7 @@ gen region_2d = substr(TSNAME, strrpos(TSNAME, ".") + 1, .)
 rename DATE  year
 rename VALUE hhinc
 
-keep if strlen(region_2d) == 4   // NUTS-2 codes only
+keep if strlen(region_2d) == 4
 keep region_2d year hhinc
 
 label var hhinc "Net household disposable income (B6N balance), MIO EUR (NUTS-2)"
@@ -166,22 +162,49 @@ save `hhinc_data'
 ********************************************************************************
 
 use `gdp_final', clear
-merge 1:1 region_2d year using `coe_data',  nogen keep(1 3)
+merge 1:1 region_2d year using `coe_data',   nogen keep(1 3)
 merge 1:1 region_2d year using `hhinc_data', nogen keep(1 3)
 
 *** Country code from NUTS-2 prefix
 gen country = substr(region_2d, 1, 2)
 
-*** Keep only years from 2000 onwards (sparse/missing before that in most series)
 keep if year >= 2000
 
-sort country region_2d year
+********************************************************************************
+***  BLOCK 7: Aggregate AT and DE from NUTS-2 to NUTS-1
+***
+***  EU-LFS for Austria and Germany is released at NUTS-1 level only.
+***  NUTS-1 code = substr(region_2d, 1, 3) for all NUTS codes.
+***  All four variables are additive flows/stocks in MIO EUR → sum within NUTS-1.
+***  Summation of chain-linked real GDP across NUTS-2 sub-regions is an
+***  approximation consistent with the chain-linking already applied at NUTS-2.
+********************************************************************************
 
-order country region_2d year gdp_real gdp_cp gdp_pyp coe hhinc
+tempfile nuts2_rest
+preserve
+    keep if !inlist(country, "AT", "DE")
+    save `nuts2_rest'
+restore
+
+keep if inlist(country, "AT", "DE")
+
+gen region_1d = substr(region_2d, 1, 3)
+collapse (sum) gdp_real gdp_cp coe hhinc, by(country region_1d year)
+rename region_1d region_2d
+
+append using `nuts2_rest'
+
+sort country region_2d year
+order country region_2d year gdp_real gdp_cp coe hhinc
 
 label var country   "Country code (ISO2)"
-label var region_2d "NUTS-2 region code"
+label var region_2d "NUTS-2 region code (NUTS-1 for AT and DE)"
 label var year      "Year"
 
+label var gdp_real "GDP chain-linked real, MIO EUR (base = `baseyear' current prices)"
+label var gdp_cp   "GDP current prices, MIO EUR"
+label var coe      "Compensation of employees, total, MIO EUR"
+label var hhinc    "Net household disposable income (B6N balance), MIO EUR"
+
 compress
-save "${cleaneddata}/eurostat/eurostat_nuts2_regaccounts.dta", replace
+save "${cleaneddata}/EUROSTAT/eurostat_nuts2_regaccounts.dta", replace
