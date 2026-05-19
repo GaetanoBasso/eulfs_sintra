@@ -25,9 +25,14 @@
 *   taxes minus subsidies on products are not separately observed, and GVA
 *   growth is the standard Eurostat approximation for real regional GDP growth.
 *
+*   AT/DE aggregation (BLOCK 7):
+*     EU-LFS for Austria (AT) and Germany (DE) is released at NUTS-1 level only.
+*     NUTS-2 series are summed to NUTS-1 for these two countries before saving.
+*     NUTS-1 code = first 3 characters of the 4-character NUTS-2 code.
+*
 *   Output:
 *     ${cleaneddata}/EUROSTAT/eurostat_nuts2_regaccounts.dta
-*     Unit: NUTS-2 region × year
+*     Unit: NUTS-2 region × year (NUTS-1 for AT and DE)
 *     Variables: country, region_2d, year, gdp_real, gdp_cp, coe, hhinc
 *
 ********************************************************************************
@@ -163,12 +168,42 @@ gen country = substr(region_2d, 1, 2)
 
 keep if year >= 2000
 
+********************************************************************************
+***  BLOCK 7: Aggregate AT and DE from NUTS-2 to NUTS-1
+***
+***  EU-LFS for Austria and Germany is released at NUTS-1 level only.
+***  NUTS-1 code = substr(region_2d, 1, 3) for all NUTS codes
+***  (e.g. AT11, AT12, AT13 → AT1;  DE11, DE12, DE13, DE14 → DE1).
+***  All four series are additive flows/stocks in MIO EUR → sum within NUTS-1.
+***  Summation of chain-linked real GDP across NUTS-2 is an approximation
+***  consistent with the chain-linking already applied at NUTS-2.
+********************************************************************************
+
+tempfile nuts2_rest
+preserve
+    keep if !inlist(country, "AT", "DE")
+    save `nuts2_rest'
+restore
+
+keep if inlist(country, "AT", "DE")
+
+gen region_1d = substr(region_2d, 1, 3)
+collapse (sum) gdp_real gdp_cp coe hhinc, by(country region_1d year)
+rename region_1d region_2d
+
+append using `nuts2_rest'
+
 sort country region_2d year
 order country region_2d year gdp_real gdp_cp coe hhinc
 
 label var country   "Country code (ISO2)"
-label var region_2d "NUTS-2 region code"
+label var region_2d "NUTS-2 region code (NUTS-1 for AT and DE)"
 label var year      "Year"
+
+label var gdp_real "GDP chain-linked real, MIO EUR (base = `baseyear' current prices)"
+label var gdp_cp   "GDP current prices, MIO EUR"
+label var coe      "Compensation of employees, total, MIO EUR"
+label var hhinc    "Net household disposable income (B6N balance), MIO EUR"
 
 compress
 save "${cleaneddata}/EUROSTAT/eurostat_nuts2_regaccounts.dta", replace
