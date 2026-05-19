@@ -210,6 +210,7 @@ merge 1:1 country region_2d period using `ss_final', nogen
 gen int period_t0 = 2000 + 5 * period
 
 sort country region_2d period
+replace region_2d=country+region_2d
 
 ********************************************************************************
 ***  Variable labels
@@ -255,6 +256,9 @@ label var inactive_fb          "Inactive 15-64, foreign born"
 label var sh_tert              "Share of 15-64 with tertiary educ (ISCED 5-8), among non-missing educ"
 
 label var ss_instrument        "Card (2001) shift-share: groups AFR_N_ASI_NME + ASI_ESSE + AME_LAT, leave-one-out across all regions and countries"
+
+*** Drop Germany first two periods
+drop if country=="DE"&pop_fb==0
 
 ********************************************************************************
 ***  Save

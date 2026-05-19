@@ -21,7 +21,7 @@
 ***  STEP 1: Collapse Eurostat annual data to 5-year period averages
 ********************************************************************************
 
-use "${cleaneddata}/eurostat/eurostat_nuts2_regaccounts.dta", clear
+use "${cleaneddata}/EUROSTAT/eurostat_nuts2_regaccounts.dta", clear
 
 gen byte period = .
 replace period = 1 if inrange(year, 2005, 2009)
@@ -30,7 +30,7 @@ replace period = 3 if inrange(year, 2015, 2019)
 replace period = 4 if inrange(year, 2020, 2024)
 drop if missing(period)
 
-collapse (mean) gdp_real gdp_cp coe hhinc, by(region_2d period)
+collapse (mean) gdp_real gdp_cp coe hhinc, by(country region_2d period)
 
 label define lperiod 1 "2005-2009" 2 "2010-2014" 3 "2015-2019" 4 "2020-2024"
 label values period lperiod
@@ -46,9 +46,9 @@ save `eurostat_5y'
 ***  STEP 2: Merge with EU-LFS panel
 ********************************************************************************
 
-use "${finaldata}/EULFS/eulfs_nuts2_panel_5y.dta", clear
+use "${cleaneddata}/EULFS/eulfs_nuts2_panel_5y.dta", clear
 
-merge 1:1 region_2d period using `eurostat_5y', nogen
+merge 1:1 country region_2d period using `eurostat_5y', //nogen
 
 ********************************************************************************
 ***  STEP 3: Save
