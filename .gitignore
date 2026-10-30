@@ -1,0 +1,31 @@
+# Ignore everything by default
+/*
+
+# But allow the .gitignore file itself
+!.gitignore
+
+# Allow the dofiles/ folder and everything inside it
+!/dofiles/
+!/dofiles/**
+
+# Allow the logfiles/ folder and everything inside it
+!/logfiles/
+!/logfiles/**
+
+# Allow the graphs/ folder and everything inside it
+!/graphs/
+!/graphs/**
+
+# Allow project documentation
+!/README.md
+!/CLAUDE.md
+
+# Allow also all figures
+!/graphs/
+!/graphs/**
+
+# Stata swap files
+/dofiles/~*.stswp
+
+# Windows thumbnail cache
+Thumbs.db
